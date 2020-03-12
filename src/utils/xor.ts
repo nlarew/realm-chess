@@ -1,3 +1,3 @@
-export default function xor(a, b) {
+export default function xor(a: any, b: any) {
   return (a || b) && !(a && b);
 }

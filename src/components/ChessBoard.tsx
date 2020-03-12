@@ -9,12 +9,16 @@ import ChessPiece, {
   Bishop,
   Knight,
   Pawn,
+  ChessPieceType,
 } from "./ChessPiece";
-import { ChessPieceProps } from "./ChessPiece";
+import { ChessPieceConfiguration } from "./ChessPiece";
 
 export type RankID = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
 export type FileID = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
-export type PlayerColor = "black" | "white";
+export enum PlayerColor {
+  Black = "black",
+  White = "white"
+}
 interface Cell {
   id: string;
   rank: RankID;
@@ -22,28 +26,29 @@ interface Cell {
   color: PlayerColor;
 }
 const CELLS: Array<Cell> = new Array(64).fill(0).map((_, index) => {
-  const file = String.fromCharCode(65 + index / 8) as FileID;
+  const file = String.fromCharCode(65 + index / 8);
   const isOddRank = file.charCodeAt(0) % 2 === 1;
-  const rank = String(1 + (index % 8)) as RankID;
+  const rank = String(1 + (index % 8));
   const isOddFile = Number(rank) % 2 === 1;
+  const color = !xor(isOddFile, isOddRank) ? "black" : "white"
   return {
     id: `${file}${rank}`,
-    file,
-    rank,
-    color: !xor(isOddFile, isOddRank) ? "black" : "white",
+    file: file as FileID,
+    rank: rank as RankID,
+    color: color as PlayerColor,
   };
 });
 
 const BOARD_HEIGHT = 800;
 const BOARD_WIDTH = 800;
 
-function useChessPieces(initialPieces = []) {
+function useChessPieces(initialPieces: Array<ChessPieceConfiguration> = []) {
   const [pieces, setPieces] = React.useState(initialPieces);
   return pieces;
 }
 
 type ChessBoardProps = {
-  initialPieces: Array<ChessPieceProps>;
+  initialPieces: Array<ChessPieceConfiguration>;
 };
 export default function ChessBoard({ initialPieces = [] }: ChessBoardProps) {
   const pieces = useChessPieces(initialPieces);
@@ -52,18 +57,13 @@ export default function ChessBoard({ initialPieces = [] }: ChessBoardProps) {
       {CELLS.map(cell => (
         <ChessBoard.Cell key={cell.id} cell={cell}>
           <ChessBoard.CellLabel>{cell.id}</ChessBoard.CellLabel>
-          {pieces
-            .map(piece => {
-              console.log(
-                `piece.cell_id (${piece.cell_id}) === cell.id (${cell.id})`,
-                piece.cell_id === cell.id,
-              );
-              return piece;
-            })
-            .filter(piece => piece.cell_id === cell.id)
-            .map(piece => (
-              <ChessPiece type={piece.type} color={piece.color} />
-            ))}
+          {
+            pieces
+              .filter(piece => piece.cell_id === cell.id)
+              .map(piece => (
+                <ChessPiece type={piece.type} color={piece.color} />
+              ))
+          }
         </ChessBoard.Cell>
       ))}
     </ChessBoard.Layout>
