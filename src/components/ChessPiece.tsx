@@ -11,6 +11,7 @@ export enum ChessPieceType {
   Knight = "knight",
   Pawn = "pawn",
 }
+
 export interface ChessPieceProps {
   type: ChessPieceType;
   color: PlayerColor;
@@ -25,10 +26,12 @@ export default function ChessPiece({ type, color }: ChessPieceProps) {
     </ChessPiece.Container>
   );
 }
+
 ChessPiece.Container = styled.div`
   margin: auto;
   color: green;
 `;
+
 type SpriteProps = {
   type: ChessPieceType;
   color: PlayerColor;
